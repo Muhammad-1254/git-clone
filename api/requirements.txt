@@ -1,0 +1,12 @@
+openai
+python-dotenv
+
+
+uvicorn
+uvicorn[standard]
+fastapi
+sqlalchemy
+pydantic
+
+tiktoken
+
