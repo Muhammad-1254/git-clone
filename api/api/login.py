@@ -1,13 +1,13 @@
+from db.database import get_db
+from db.models.User import User
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from schemas.user import TokenData, UserAuth, UserSystem
 from sqlalchemy.orm import Session, joinedload
 
 # from api.utils.utils import authenticate_user, create_access_token
 from api.utils.user_utils import (authenticate_user, create_access_token,
                                   get_user_by_email_or_id, verify_password)
-from db.database import get_db
-from db.models.User import User
-from schemas.user import TokenData, UserAuth, UserSystem
 
 router = APIRouter()
 
@@ -29,12 +29,7 @@ async def login(user:UserAuth, db:Session=Depends(get_db)):
     # return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Something wen\'t wrong')
 
 
-@router.get('/api/v1/users/{user_id}',)
-async def get_user_data(user_id:str,db:Session=Depends(get_db)):
-    db_user = db.query(User).options(joinedload(User.userchats)).filter(User.id == user_id).first()
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+
 
     
     

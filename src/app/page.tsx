@@ -1,12 +1,16 @@
-import WebSocketTest from "@/components/WebSocketTest";
-export default function Home() {
- 
+
+
+import HomePage from "@/components/HomePage";
+import UserInput from "@/components/UserInput";
+import UserMenu from "@/components/UserMenu";
+const Homepage = () => {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-     {/* Streaming response */}
-     {/* <App/> */}
-      {/* <UserChat/> */}
-    <WebSocketTest/>
-    </main>
+    <section className="w-[80%] h-full flex flex-col items-center justify-between">
+      <HomePage/>
+      <UserMenu />
+      <UserInput/>
+    </section>
   );
-}
+};
+
+export default Homepage;

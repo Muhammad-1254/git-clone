@@ -49,29 +49,25 @@ def tts_chat_compilation(audio_file:str,prompt: str, ):
         model='tts-1',
         voice='alloy',
         input=prompt
+        
         )
+    
     print("res created: ",res)
     res.stream_to_file(audio_file)
     
     
 tempStr:str = ''
 
-async def chat_completion_temp(prompt,):
+async def chat_completion_temp(conversation_history:list):
     # conversation_history.append({"role": "user", "content": prompt})
     chat_completion =await temp_client.chat.completions.create(
         model='gpt-3.5-turbo-1106',
         max_tokens=150,
-        messages=[{'role':'user', 'content':prompt},],
+        messages=conversation_history,
 stream=True
     )
-    # conversation_history.append({"role": "assistant", "content": chat_completion.choices[0].message.content})
-    # conversation_history.append({"role": "assistant", "content": chat_completion.choices[0].message.content})
-    all_content = ''
+    
     async for chunk in chat_completion:
         content = chunk.choices[0].delta.content
         if content:
-            all_content += content
-            print(f"content: {content}  ")
-            yield all_content
-    
-        
+            yield content

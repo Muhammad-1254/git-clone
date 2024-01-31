@@ -1,3 +1,5 @@
+import { StoreProvider } from "@/providers/StoreProvider";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -11,12 +13,30 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  chatHistory,
 }: Readonly<{
   children: React.ReactNode;
+  chatHistory: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ThemeProvider 
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+        >
+            <StoreProvider>
+          <main className="w-[350px] md:w-[765px] lg:w-screen h-screen flex  justify-center
+          overflow-hidden
+          mx-auto">
+              {chatHistory}
+              {children}
+          </main>
+            </StoreProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

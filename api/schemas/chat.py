@@ -13,8 +13,9 @@ class ChatCreateBase(BaseModel):
 
 
     
-class ChatNewCreate(ChatCreateBase):
+class ChatNewCreate(BaseModel):
     user_id:str
+
     
 class ChatCreate(ChatNewCreate):
     chat_id:str

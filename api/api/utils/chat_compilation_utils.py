@@ -1,16 +1,15 @@
 import json
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from fastapi.responses import StreamingResponse
-from sqlalchemy.orm import Session
-
 from db.database import get_db
 from db.models.User import UserChat
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import StreamingResponse
 from openai_chat.openai_connection import (chat_completion,
                                            spt_chat_compilation,
                                            tts_chat_compilation)
 from schemas.chat import ChatConversationVoice, ChatCreate
+from sqlalchemy.orm import Session
 
 
 def upload_file(file: UploadFile): 

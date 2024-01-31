@@ -1,71 +1,46 @@
-from typing import AsyncGenerator, NoReturn
-
 import uvicorn
 from dotenv import find_dotenv, load_dotenv
-from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
-from openai import AsyncOpenAI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
+from openai import OpenAI
 
-_ = load_dotenv(find_dotenv())
+# streaming voice from openai tss by fast api
 
-app = FastAPI()
-client = AsyncOpenAI()
+_ = load_dotenv(find_dotenv())  # read local .env file
 
-with open("index.html") as f:
-    html = f.read()
+client = OpenAI()
+app =FastAPI()
 
-async def get_ai_response(message: str) -> AsyncGenerator[str, None]:
-    """
-    OpenAI Response
-    """
-    response = await client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a helpful assistant, skilled in explaining "
-                    "complex concepts in simple terms."
-                ),
-            },
-            {
-                "role": "user",
-                "content": message,
-            },
-        ],
-        stream=True,
-    )
+input ="""The information you provided seems to be related to Next.js, a React framework for building web applications. However, as of my last knowledge update in January 2022, I don't have specific details about the "createContext" function you mentioned or the "use client" directive in Next.js.
 
-    all_content = ""
-    async for chunk in response:
-        content = chunk.choices[0].delta.content
-        if content:
-            all_content += content
-            yield all_content
+# However, based on the context,it seems like "createContext" might be a reference to the React createContext function, which is used for creating a context object in React. Context provides a way to pass data through the component tree without having to pass props down manually at every level.
 
-@app.get("/")
-async def web_app() -> HTMLResponse:
-    """
-    Web App
-    """
-    return HTMLResponse(html)
+# In the provided message, it's mentioned that createContext works only in client components and that you need to add the "use client" directive at the top of the file to use it. This suggests that there might be some server-side rendering (SSR) considerations or limitations when working with context in certain components. The link provided in the message directs you to the Next.js documentation for more information.
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
-    """
-    Websocket for AI responses
-    """
-    await websocket.accept()
-    while True:
-        message = await websocket.receive_text()
-        async for text in get_ai_response(message):
-            await websocket.send_text(text)
+# If you are working with Next.js,I recommend checking the latest Next.js documentation for any updates or changes related to context, "createContext," and the "use client" directive. The information might have evolved since my last update."""
+    # input="Hello world! This is a new streaming test streaming test.",
 
-if __name__ == "__main__":
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        log_level="debug",
-        reload=True,
-    )
+
+
+
+
+@app.get("/stream-mp3")
+async def stream_mp3():
+    response = client.audio.speech.create(
+    model="tts-1",
+    voice="alloy",
+ input=input,
+ response_format='opus',
+)
+    
+    # Replace "your_file.mp3" with the actual path to your MP3 file
+    file_path = "output.mp3"
+
+    try:
+        return StreamingResponse(response.iter_bytes(), media_type="audio/mp3")
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="File not found")
+
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app='temp:app', host='0.0.0.0', port=8000, reload=True)

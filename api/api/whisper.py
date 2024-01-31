@@ -1,15 +1,15 @@
 import os
 from typing import Annotated
 
+from db.database import get_db
 from fastapi import (APIRouter, Depends, File, Form, HTTPException, Request,
                      UploadFile, status)
 from fastapi.responses import StreamingResponse
+from schemas.chat import ChatConversationVoice, ChatCreate
 
 from api.utils.chat_compilation_utils import (conversation_voice,
                                               speech_to_text, text_to_speech,
                                               upload_file)
-from db.database import get_db
-from schemas.chat import ChatConversationVoice, ChatCreate
 
 router = APIRouter()
 
@@ -30,18 +30,3 @@ async def conversation_by_voice(user_id:str=Form(), chat_id:str=Form(None),
     return res
 
 
-
-
-
-
-
-#temp 
-
-# @router.post("/uploadfile/")
-# async def create_upload_file(file: UploadFile = File(...)):
-#     return {"filename": file.filename}
-
-# @router.get("/getfile")
-# async def get_file():
-#     file_path = "storage/temp_voices/7b33b633-a54c-4b06-b57e-3416611a4776_system.mp3"
-#     return StreamingResponse(open(file_path, "rb"), media_type="audio/mpeg")
