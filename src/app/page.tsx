@@ -1,14 +1,15 @@
+'use client'
 
-
-import HomePage from "@/components/HomePage";
 import UserInput from "@/components/UserInput";
-import UserMenu from "@/components/UserMenu";
+import { useTheme } from "next-themes";
+
+
 const Homepage = () => {
+  const {theme, setTheme} = useTheme()
+  setTheme('dark')
   return (
     <section className="w-[80%] h-full flex flex-col items-center justify-between">
-      <HomePage/>
-      <UserMenu />
-      <UserInput/>
+<UserInput/>
     </section>
   );
 };

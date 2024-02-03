@@ -187,7 +187,7 @@ async def create_chat(websocket:WebSocket, db: Session = Depends(get_db)):
 # However, based on the context,br/> it seems like "createContext" might be a reference to the React createContext function, which is used for creating a context object in React. Context provides a way to pass data through the component tree without having to pass props down manually at every level.
 
 # In the provided message,<br/> it's mentioned that createContext works only in client components and that you need to add the "use client" directive at the top of the file to use it. This suggests that there might be some server-side rendering (SSR) considerations or limitations when working with context in certain components. The link provided in the message directs you to the Next.js documentation for more information.
-            bot_answer='hello'
+            bot_answer='hello hello1 hello2'
             for letters in bot_answer:
                 await websocket.send_json({
                         'is_stream':True,

@@ -26,6 +26,7 @@ export default function RootLayout({
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange
+        
         >
             <StoreProvider>
           <main className="w-[350px] md:w-[765px] lg:w-screen h-screen flex  justify-center
