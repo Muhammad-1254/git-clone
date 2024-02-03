@@ -131,8 +131,9 @@ async def create_chat(websocket:WebSocket, db: Session = Depends(get_db)):
     try:
         await websocket.accept()
         body = await websocket.receive_json()
-        user_id = body['body']['user_id']
-        chat_id = body['body']['chat_id']
+        print(f"body: {body}")
+        user_id = body['user_id']
+        chat_id = body['chat_id']
         print(f"user_id: {user_id}")
         print(f"chat_id: {chat_id}")
         if user_id not in temp_list:
