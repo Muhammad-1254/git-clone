@@ -2,7 +2,8 @@
 import { useToast } from "@/components/ui/use-toast";
 import { deleteChatByUserIdChatId, getChatDataByUserId } from "@/lib/RequestQueries";
 import { TChatDataState, addMessage, deleteMessage } from "@/lib/redux/slice/ChatDataSlice";
-import { setApiRes, setIsSocketClose } from "@/lib/redux/slice/PromptChatData";
+import { setApiRes } from "@/lib/redux/slice/PromptChatData";
+import { ChatType, setChatType, setIsOpen } from '@/lib/redux/slice/WebSocketSlice';
 import { AppDispatch, useAppSelector } from "@/lib/redux/store";
 import { AxiosError } from "axios";
 import moment from "moment";
@@ -12,7 +13,6 @@ import { MdDeleteOutline, MdOutlineNotStarted } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-
 const RecentChatHistory = () => {
   const [loading,setLoading] = useState(false);
   const [delLoading,setDeLoading] = useState(false)
@@ -22,8 +22,9 @@ const RecentChatHistory = () => {
   const { toast } = useToast();
   const user_id = '7b33b633-a54c-4b06-b57e-3416611a4776'
   const editChatState = useAppSelector((state)=>state.PromptChatReducer.value)
-
+  const isWebSocketOpen = useAppSelector((state)=>state.WebSocketReducer.value.isOpen)
   useEffect(() => {
+
     async function getHistoryData() {
       try {
   setLoading(true)        
@@ -63,17 +64,29 @@ const RecentChatHistory = () => {
   };
 
  function editChatHandle(chat_id:string) {
-  if(!editChatState.isSocketClose){
-    dispatch(setIsSocketClose(true))
+  if (isWebSocketOpen){
+    dispatch(setIsOpen(false))
   }
-    dispatch(setApiRes({
-      chat_id,
-      message:null
-    }))
+  dispatch(setApiRes({
+    chat_id,
+    message:null
+  }))
+  dispatch(setChatType(ChatType.previousChat))    
   console.log('edit change state click:', {editChatState})
+  
+  dispatch(setIsOpen(true))
 
 }
-console.log({chatData})
+
+
+// function newChatHandle(){
+//   dispatch(setApiRes({
+//     chat_id:null,
+//   }))
+//   dispatch(setIsOpen(true))
+  
+// dispatch(setChatType(ChatType.newChat))
+// }
 
   return (
     <>
@@ -81,12 +94,8 @@ console.log({chatData})
       <div className="flex flex-col gap-y-3 py-3">
         {chatData?.map((item, index) => 
         
-        {
-          console.log(item.conversation_history)
-          if (item.conversation_history.length ===  0){
-            return null
-          }
-          return(
+        
+          (
           <Card onClick={()=>{}} 
            key={index} className="relative group">
             <p
@@ -102,7 +111,10 @@ console.log({chatData})
                 ? item?.conversation_history[
                     item.conversation_history.length - 1
                   ].content
-                : "tit Jésus de bout dviarge de mangeux d marde de cossin"}
+
+                : 
+null
+}
             </p>
             {/* div for hover  */}
             
@@ -151,7 +163,7 @@ console.log({chatData})
              
             
           </Card>
-        )})}
+        ))}
       </div>
       {/* </ScrollArea> */}
     </>

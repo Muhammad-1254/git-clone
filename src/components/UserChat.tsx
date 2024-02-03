@@ -8,6 +8,7 @@ const UserChat = () => {
     (state) => state.PromptChatReducer.value.apiRes.messageList
   );
   console.log("messageList:", messageList);
+  
   return (
     <div className="w-[500px] h-[350px] absolute bottom-0 bg-gray-600 overflow-y-scroll">
       {messageList.map((message, index) => (

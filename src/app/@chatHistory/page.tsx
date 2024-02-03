@@ -1,10 +1,29 @@
 "use client";
 import RecentChatHistory from "@/components/RecentChatHistory";
 import { Button } from "@/components/ui/button";
+import { setApiRes } from '@/lib/redux/slice/PromptChatData';
+import { ChatType, setChatType, setIsOpen } from '@/lib/redux/slice/WebSocketSlice';
+import { useAppSelector } from "@/lib/redux/store";
 import { Separator } from "@radix-ui/react-separator";
 import { useRef } from "react";
-
+import { useDispatch } from "react-redux";
 const ChatHistory = () => {
+const dispatch = useDispatch()
+const isWebSocketOpen   = useAppSelector((state)=>state.WebSocketReducer.value.isOpen)
+
+  function newChatHandle(){
+    if(isWebSocketOpen){
+      dispatch(setIsOpen(false))
+    }
+    dispatch(setApiRes({
+      chat_id:null,
+    }))
+    
+    dispatch(setChatType(ChatType.newChat))
+    dispatch(setIsOpen(true))
+  }
+
+
 
 const socket = useRef<WebSocket|null>(null);
   return (
@@ -23,7 +42,9 @@ const socket = useRef<WebSocket|null>(null);
 
         {/* for new chat  */}
         <div className=" flex justify-end  pr-3">
-          <Button className="py-5 px-8  " variant={"outline"}>
+          <Button
+          onClick={()=>newChatHandle()}
+          className="py-5 px-8  " variant={"outline"}>
             + New Chat
           </Button>
         </div>
