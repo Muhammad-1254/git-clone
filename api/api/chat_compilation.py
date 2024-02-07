@@ -1,15 +1,14 @@
 import asyncio
 from uuid import uuid4
 
-from fastapi import (APIRouter, Depends, HTTPException, WebSocket,
-                     WebSocketException, status)
-from sqlalchemy import delete
-from sqlalchemy.orm import Session, joinedload
-
 from db.database import get_db
 from db.models.User import User, UserChat
+from fastapi import (APIRouter, Depends, HTTPException, WebSocket,
+                     WebSocketException, status)
 from openai_chat.openai_connection import chat_completion, chat_completion_temp
 from schemas.chat import Chat, ChatCreate, ChatNewCreate, ChatPrevConversation
+from sqlalchemy import delete
+from sqlalchemy.orm import Session, joinedload
 
 router = APIRouter()
 
@@ -181,14 +180,14 @@ async def create_chat(websocket:WebSocket, db: Session = Depends(get_db)):
             #     bot_answer += text
             
             #developing mode 
-#             bot_answer = """The information you provided seems to be related to Next.js, a React framework for building web applications. However, as of my last knowledge update in January 2022, I don't have specific details about the "createContext" function you mentioned or the "use client" directive in Next.js.
+            bot_answer = """The information you provided seems to be related to Next.js, a React framework for building web applications. However, as of my last knowledge update in January 2022, I don't have specific details about the "createContext" function you mentioned or the "use client" directive in Next.js.
 
 
 # If you are working with Next.js, br/> I recommend checking the latest Next.js documentation for any updates or changes related to context, "createContext," and the "use client" directive. The information might have evolved since my last update."""
 # However, based on the context,br/> it seems like "createContext" might be a reference to the React createContext function, which is used for creating a context object in React. Context provides a way to pass data through the component tree without having to pass props down manually at every level.
 
 # In the provided message,<br/> it's mentioned that createContext works only in client components and that you need to add the "use client" directive at the top of the file to use it. This suggests that there might be some server-side rendering (SSR) considerations or limitations when working with context in certain components. The link provided in the message directs you to the Next.js documentation for more information.
-            bot_answer='hello hello1 hello2'
+            # bot_answer='hello hello1 hello2'
             for letters in bot_answer:
                 await websocket.send_json({
                         'is_stream':True,
@@ -228,7 +227,7 @@ async def create_chat(websocket:WebSocket, db: Session = Depends(get_db)):
             # for first time if user start new conversation then assign the chat_id with new chat id 
             if chat_id is None:
                 temp_chat_id  = await websocket.receive_json()
-                chat_id = temp_chat_id['body']['chat_id']
+                chat_id = temp_chat_id['chat_id']
                 print(f'tempChatId: {temp_chat_id}')
             
     except KeyboardInterrupt as e:

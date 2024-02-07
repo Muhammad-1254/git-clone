@@ -1,56 +1,103 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { getChatByUserIdCharId } from "@/lib/RequestQueries";
+import { setAddingNewChatHistory, setEmptyRealTimeUserChat, setRealTimeUserChat } from "@/lib/redux/slice/UserChatSlice";
+import {
+  setUserMessage
+} from "@/lib/redux/slice/WebSocketSlice";
+import { useAppSelector } from "@/lib/redux/store";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import webSocketService from "./WebSocketService";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-const UserInput = () => {
-  const [message, setMessage] = useState("");
-  const [isWebSocketOn, setIsWebSocketOn] = useState(false);
-  const [response,setResponse] = useState('')
-  const socket = useRef<WebSocket | null>(null);
-  useEffect(() => {
-    socket.current = new WebSocket(
-      "ws://localhost:8000/api/v1/users/chat/socket/chat"
-    );
-    socket.current.onopen =  async() => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Web socket open!");
-      const body = {
-        user_id: "7b33b633-a54c-4b06-b57e-3416611a4776",
-        chat_id: null,
-      };
-      socket.current?.send(JSON.stringify(body));
-    };
-    socket.current.onmessage = (event) => {
-      console.log(event.data);
-  setResponse(response+event.data.message)
-    }
-    socket.current.onerror = (error) => {
-      console.log("Web socket error!", error);
-      socket.current?.close() 
-    }
-    socket.current.onclose = () => {
-      console.log("Web socket closed!");
-    socket.current?.close()  
-    }
-  }, []);
 
-  function SendMessage() {
-    if (socket.current === null) {
-      return;
+const UserInput = () => {
+  const user_id = useAppSelector((state)=>state.AuthReducer.value.user_id)
+  const userMessage = useAppSelector(
+    (state) => state.WebSocketReducer.value.userMessage
+  );
+  const modelResponse = useAppSelector(
+    (state) => state.WebSocketReducer.value.modelResponse
+  );
+  const chat_id = useAppSelector(
+    (state) => state.WebSocketReducer.value.chat_id
+  );
+  const runUseEffect = useAppSelector((state)=>state.WebSocketReducer.value.runUseEffect)
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    let tempChatId = chat_id;
+    try {
+       const ws = webSocketService.getSocket()
+      // const ws = WebSocketService.getSocket();
+      if (ws !== null) {
+        ws.onopen = () => {
+          console.log("WS open");
+          const body = {
+            user_id,
+            chat_id: tempChatId,
+          };
+          ws.send(JSON.stringify(body));
+          ws.onmessage = async (e) => {
+            let loadData = JSON.parse(e.data);
+            if (loadData.is_stream) {
+              dispatch(setRealTimeUserChat({modelResponse:loadData.message}))
+              // dispatch(setModelResponse(loadData.message));
+            } else {
+              if (tempChatId === null) {
+                tempChatId = loadData.chat_id;
+                const body = {
+                  chat_id: tempChatId,
+                };
+                ws.send(JSON.stringify(body));
+              }
+
+               // fetch that upper user chat 
+               const data = await getChatByUserIdCharId(user_id, loadData.chat_id)
+              console.log('new chat fetch :',data)
+              dispatch(setAddingNewChatHistory({...data, user_id}))
+              dispatch(setEmptyRealTimeUserChat(null))
+            }
+          };
+          ws.onclose = () => {
+            console.log("WS close");
+          };
+          ws.onerror = () => {
+            console.log("WS error");
+          };
+        };
+      }
+    } catch (error: any) {
+      console.log("error happens in WS uesEffect");
     }
-    socket.current.send(message);
+  }, [runUseEffect ]);
+
+  function sendMessageHandle() {
+    dispatch(setRealTimeUserChat({userMessage}))
+    const ws = webSocketService.getSocket()
+   if (ws !== null){
+    ws.send(userMessage)
+    dispatch(setUserMessage(""))
+   }
+   
   }
 
   return (
-    <div>
-      <Input
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type your message"
-        disabled={isWebSocketOn}
-      />
-      <Button onClick={() => SendMessage()}>Send</Button>
+    <div className="flex flex-col items-start justify-normal gap-y-5">
+      <div className="">
+        <p>{modelResponse}</p>
+      </div>
+        <h1>User Input Field</h1>
+      <div  className="flex  items-center gap-x-2">
+        
+        <Input
+          value={userMessage}
+          onChange={(e) => dispatch(setUserMessage(e.target.value))}
+          placeholder="Enter your message"
+        />
+        <Button onClick={sendMessageHandle}>Send message</Button>
+      </div>
     </div>
   );
 };
