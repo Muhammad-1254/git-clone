@@ -4,6 +4,7 @@ import { TRealTimeUserChat } from "@/lib/redux/slice/UserChatSlice"
 import { useAppSelector } from "@/lib/redux/store"
 import moment from 'moment'
 import UserInput from "./UserInput"
+import MdConverter from "./sub_components/MdConverter"
 const ChatSection = () => {
     // const [data, setData] = useState<TUserHistoryChat[]>([])
   const userHistoryChat= useAppSelector((state)=>state.UserChatReducer.value.userHistoryChat)
@@ -49,9 +50,8 @@ const UserChat = (key:any, item:TRealTimeUserChat,date:null|string )=>{
     <p>{moment(date).format('DD-MMM-YYYY')}</p>
     }
     </span>
-    <p>
-        {item.content}
-    </p> 
+<MdConverter   markdown={item.content}/>
+        {/* {item.content} */}
             </div>
             </div>
     
@@ -59,3 +59,5 @@ const UserChat = (key:any, item:TRealTimeUserChat,date:null|string )=>{
     
     )
 }
+
+

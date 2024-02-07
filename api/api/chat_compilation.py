@@ -171,29 +171,21 @@ async def create_chat(websocket:WebSocket, db: Session = Depends(get_db)):
             conversation_history.append({'role': 'user', 'content': prompt})
             # print(f'')
             # get answer from chat bot
-            # async for text in chat_completion_temp(conversation_history):
-            #     await websocket.send_json({
-            #         'is_stream':True,
-            #         'message':text,
-            #         'chat_id':None,
-            #     })
-            #     bot_answer += text
+            async for text in chat_completion_temp(conversation_history):
+                await websocket.send_json({
+                    'is_stream':True,
+                    'message':text,
+                    'chat_id':None,
+                })
+                bot_answer += text
             
             #developing mode 
-            bot_answer = """The information you provided seems to be related to Next.js, a React framework for building web applications. However, as of my last knowledge update in January 2022, I don't have specific details about the "createContext" function you mentioned or the "use client" directive in Next.js.
-
-
-# If you are working with Next.js, br/> I recommend checking the latest Next.js documentation for any updates or changes related to context, "createContext," and the "use client" directive. The information might have evolved since my last update."""
-# However, based on the context,br/> it seems like "createContext" might be a reference to the React createContext function, which is used for creating a context object in React. Context provides a way to pass data through the component tree without having to pass props down manually at every level.
-
-# In the provided message,<br/> it's mentioned that createContext works only in client components and that you need to add the "use client" directive at the top of the file to use it. This suggests that there might be some server-side rendering (SSR) considerations or limitations when working with context in certain components. The link provided in the message directs you to the Next.js documentation for more information.
-            # bot_answer='hello hello1 hello2'
-            for letters in bot_answer:
-                await websocket.send_json({
-                        'is_stream':True,
-                        'message':letters,
-                        'chat_id':None,
-                    })
+            # for letters in _data:
+            #     await websocket.send_json({
+            #             'is_stream':True,
+            #             'message':letters,
+            #             'chat_id':None,
+            #         })
                 # await asyncio.sleep(0.01)
                 
             conversation_history.append({'role': 'assistant', 'content': bot_answer})
@@ -305,3 +297,105 @@ async def get_user_data_by_id(user_id:str,chat_id:str,db:Session=Depends(get_db)
 #     }
 #     print(f'user: {user}')
 #     return user
+
+
+
+
+
+
+_data = """
+You can use [Tailwind](https://tailwindcss.com)'s Typography plugin to style rendered Markdown from sources such as Astro's [**content collections**](/en/guides/content-collections/).
+
+This recipe will teach you how to create a reusable Astro component to style your Markdown content using Tailwind's utility classes.
+
+## Prerequisites
+
+An Astro project that:
+
+	- has [Astro's Tailwind integration](/en/guides/integrations-guide/tailwind/) installed.
+	- uses Astro's [content collections](/en/guides/content-collections/).
+
+## Setting Up \`@tailwindcss/typography\`
+
+First, install \`@tailwindcss/typography\` using your preferred package manager.
+
+<PackageManagerTabs>
+ 	<Fragment slot="npm">
+	\`\`\`shell 
+	npm install -D @tailwindcss/typography
+	\`\`\`
+	</Fragment>
+  	<Fragment slot="pnpm">
+	\`\`\`shell 
+	pnpm add -D @tailwindcss/typography
+	\`\`\`
+	</Fragment>
+  	<Fragment slot="yarn">
+	\`\`\`shell
+	yarn add --dev @tailwindcss/typography
+	\`\`\`
+	</Fragment>
+</PackageManagerTabs>
+
+Then, add the package as a plugin in your Tailwind configuration file.
+
+\`\`\`diff lang="js"
+// tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+export default {
+  theme: {
+    // ...
+  },
+  plugins: [
++   require('@tailwindcss/typography'),
+    // ...
+  ],
+}
+\`\`\`
+
+## Recipe
+
+1. Create a \`<Prose /> \` component to provide a wrapping \`<div>\` with a \`<slot />\` for your rendered Markdown. Add the style class \`prose\` alongside any desired [Tailwind element modifiers](https://tailwindcss.com/docs/typography-plugin#element-modifiers) in the parent element.
+
+    \`\`\`astro title="src/components/Prose.astro"
+    ---
+    ---
+    <div 
+      class="prose dark:prose-invert 
+      prose-h1:font-bold prose-h1:text-xl 
+      prose-a:text-blue-600 prose-p:text-justify prose-img:rounded-xl 
+      prose-headings:underline">
+      <slot />
+    </div>
+    \`\`\`
+    :::tip
+    The \`@tailwindcss/typography\` plugin uses [**element modifiers**](https://tailwindcss.com/docs/typography-plugin#element-modifiers) to style child components of a container with the \`prose\` class. 
+
+    These modifiers follow the following general syntax: 
+
+      \`\`\`
+      prose-[element]:class-to-apply
+      \`\`\` 
+
+    For example, \`prose-h1:font-bold\` gives all \`<h1>\` tags the \`font-bold\` Tailwind class.
+    :::
+
+2. Query your collection entry on the page you want to render your Markdown. Pass the \`<Content />\` component from \`await entry.render()\` to \`<Prose />\` as a child to wrap your Markdown content in Tailwind styles.
+
+    \`\`\` astro title="src/pages/index.astro"
+    ---
+    import Prose from '../components/Prose.astro';
+    import Layout from '../layouts/Layout.astro';
+    import { getEntry } from 'astro:content';
+
+    const entry = await getEntry('collection', 'entry');
+    const { Content } = await entry.render();
+    ---
+    <Layout>
+      <Prose>
+        <Content />
+      </Prose>
+    </Layout>
+    \`\`\`
+
+## Resources"""

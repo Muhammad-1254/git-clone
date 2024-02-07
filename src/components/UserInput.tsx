@@ -1,7 +1,7 @@
 "use client";
 
 import { getChatByUserIdCharId } from "@/lib/RequestQueries";
-import { setAddingNewChatHistory, setEmptyRealTimeUserChat, setRealTimeUserChat } from "@/lib/redux/slice/UserChatSlice";
+import { setAddingNewChatHistory, setRealTimeUserChat } from "@/lib/redux/slice/UserChatSlice";
 import {
   setUserMessage
 } from "@/lib/redux/slice/WebSocketSlice";
@@ -57,7 +57,7 @@ const UserInput = () => {
                const data = await getChatByUserIdCharId(user_id, loadData.chat_id)
               console.log('new chat fetch :',data)
               dispatch(setAddingNewChatHistory({...data, user_id}))
-              dispatch(setEmptyRealTimeUserChat(null))
+              // dispatch(setEmptyRealTimeUserChat(null))
             }
           };
           ws.onclose = () => {

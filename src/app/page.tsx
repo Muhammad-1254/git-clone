@@ -2,17 +2,16 @@
 
 import ChatSection from "@/components/ChatSection";
 import LeftNavBar from "@/components/LeftNavBar";
+import UserMenu from "@/components/UserMenu";
 import webSocketService from "@/components/WebSocketService";
 import {
   setChatId
 } from "@/lib/redux/slice/WebSocketSlice";
 import { useAppSelector } from "@/lib/redux/store";
-import { useTheme } from "next-themes";
 import { useDispatch } from "react-redux";
 
 const Page = () => {
-  const {setTheme} = useTheme()
-  setTheme('dark')
+  
   const UserFieldComponent = useAppSelector(
     (state) => state.WebSocketReducer.value.userFieldComponent
   );
@@ -63,6 +62,7 @@ const Page = () => {
 
     <section className="lg:mx-auto overflow-y-scroll">
     <ChatSection/>
+    <UserMenu/>
     
     </section>
     </main>
