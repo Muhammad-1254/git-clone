@@ -1,55 +1,48 @@
 
-import asyncio
-from uuid import uuid4
 
-from auth.auth import get_session_cookie_value
 from db.database import engine
 from db.models.User import Base
-from fastapi import Depends, FastAPI, Request, Response, WebSocket, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
-from schemas.user import UserAuth, UserSystem
+from fastapi import FastAPI
 
 from api import chat_compilation, login, signup, whisper
-from api.utils.user_utils import get_current_user
 
 Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
 
-with open('index.html') as f:
-    html_content = f.read()
+# with open('index.html') as f:
+#     html_content = f.read()
 
 
-@app.get('/')
-async def index():
-    return HTMLResponse(html_content)
+# @app.get('/')
+# async def index():
+#     return HTMLResponse(html_content)
 
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket) :
-    """
-    Websocket for AI responses
-    """
-    await websocket.accept()
-    while True:
-        message = await websocket.receive_text()
-        await websocket.send_text(message)
-        asyncio.sleep(5)
+# @app.websocket("/ws")
+# async def websocket_endpoint(websocket: WebSocket) :
+#     """
+#     Websocket for AI responses
+#     """
+#     await websocket.accept()
+#     while True:
+#         message = await websocket.receive_text()
+#         await websocket.send_text(message)
+#         asyncio.sleep(5)
 
-origins=[
-    'http:localhost:3000'
-]
+# origins=[
+#     'http:localhost:3000'
+# ]
 # developing mode allowing all origins
-origins = ["*"]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# origins = ["*"]
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#      allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 # @app.middleware('http')
 # async def adding_session_id(request:Request, call_next):
