@@ -16,9 +16,8 @@ const ChatSection = () => {
     const activeChatID = useAppSelector((state)=>state.UserChatReducer.value.chatPageActiveChat)
   const realTimeData = useAppSelector((state)=>state.UserChatReducer.value.realTimeUserChat)
     return (
-      <div className="relative w-[calc(100%/1.5)]  lg:mx-auto h-screen flex flex-col items-start justify-evenly lg:justify-between lg:pb-1.5  " >
-    <div className=" w-full  flex flex-col items-start ">
-<ScrollArea className="flex flex-col  h-[90vh] ">
+      <div className="border relative  w-[calc(100%/1.5) w-[55vw]  lg:mx-auto h-screen flex flex-col items-start justify-evenly lg:justify-between lg:pb-1.5  " >
+<ScrollArea className="w-full flex flex-col  h-[90vh] ">
 
  {
   activeChatID && userHistoryChat.find(item=>item.id === activeChatID)?.conversation_history.map((item,_)=>UserChat(_, item,null ))}
@@ -34,7 +33,6 @@ const ChatSection = () => {
 
 
 
-    </div>
     <div className="w-full absolute bottom-2.5">
 
     <UserInput/>
@@ -66,19 +64,17 @@ const UserChat = (key:any, item:TRealTimeUserChat,date:null|string )=>{
         <GiArtificialHive/>
         </span>}
       </div>
-      date date
-    {date
-    &&
-    <p>{moment(date).format('DD-MMM-YYYY')}</p>
+    { date?
+    
+    <p>{moment(date).format('DD-MMM-YYYY')}</p>:
+    <p>{moment(Date.now()).format('DD-MMM-YYYY')}</p>
+
     }
     </div>
       {item.role === 'user' ?
       
       <p className="flex" >
-        
         {item.content} 
-        helo mu name c najcnasd cancjacansdc adcjasdnc jkasdca jc acjka scjdj cjd c ajdc jkdcjkd helo mu name c najcnasd cancjacansdc adcjasdnc jkasdca jc acjka scjdj cjd c ajdc jkdcjkd
-        
         </p>
       
       :item.role ==='assistant'&&
