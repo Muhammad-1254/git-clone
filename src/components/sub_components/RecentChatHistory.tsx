@@ -67,7 +67,7 @@ setLoading(false)
             "
             >
               {
-               item.conversation_history.length>0&& item.conversation_history[item.conversation_history.length - 1]
+                item.conversation_history[item.conversation_history.length - 1]
                   .content
               }
             </p>

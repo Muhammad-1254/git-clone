@@ -12,95 +12,6 @@ from sqlalchemy.orm import Session, joinedload
 
 router = APIRouter()
 
-
-# # creating new chat history
-# @router.post("/new")
-# async def create_new_chat(chat_data: ChatNewCreate, db: Session = Depends(get_db)):
-#     """Create new chat with Chat compilation API"""
-    
-#     try:
-#         # checking if user_id exist or not
-#         user_exist = db.query(User).filter(User.id == chat_data.user_id).first()
-#         if user_exist is None:
-#             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='user not found')
-#         conversation_history = []
-#         conversation_history.append({"role":"user","content":chat_data.prompt})
-#         # get answer from chat bot
-#         message = chat_completion(prompt=chat_data.prompt,
-#                                 conversation_history=conversation_history)
-#         print(f"message: {message}")
-#         conversation_history.append({'role': 'assistant', 'content': message})
-#         new_chat = UserChat(user_id=chat_data.user_id,
-#                             conversation_history=conversation_history,)
-#         db.add(new_chat)
-#         db.commit()
-#         db.refresh(new_chat)
-#         return HTTPException(status_code=status.HTTP_200_OK, detail={'message':'send successfully','data':new_chat.conversation_history[-1]},)        
-#     except Exception as e:
-#         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={'message':'something went wrong','error':e.args})
-
-
-# @router.post("/conversation")
-# async def create_chat(chat_data: ChatCreate, db: Session = Depends(get_db)):
-#     """Resume your conversation with Chat Compilation API"""
-#     try:
-#         # getting conversation history
-#         history = db.query(UserChat).filter(UserChat.id == chat_data.chat_id).first()
-#         if history is None:
-        
-#             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='record not found')
-#         elif history.user_id != chat_data.user_id:
-#             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Something went wrong')
-#         print(f"history: {history}")
-#         # get answer from chat bot
-#         message = chat_completion(prompt=chat_data.prompt,
-#                                 conversation_history=history.conversation_history)
-
-#         db.query(UserChat).filter(UserChat.id == chat_data.chat_id).update(
-#             {"conversation_history": history.conversation_history+[{"role":"user","content":chat_data.prompt},{"role": "assistant", "content": message}]})
-
-#         print(f"message: {message}")
-
-#         db.commit()
-#         db.refresh(history)
-#         return HTTPException(status_code=status.HTTP_200_OK, detail={'message':'send successfully','data':message})
-#     except Exception as e:
-#         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={'message':'something went wrong','error':e.args})
-
-# @router.post('/prev_conversation')
-# async def chat_with_previous_conversation(chat_data: ChatPrevConversation, db: Session = Depends(get_db)):
-#     """Start new Chat with Previous Chat Chat Compilation API"""
-#     # getting conversation history
-#     try:
-        
-#         history = db.query(UserChat).filter(UserChat.id == chat_data.chat_id).first()
-#         if history is None:
-        
-#             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='record not found')
-#         elif history.user_id != chat_data.user_id:
-#             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Something went wrong')
-        
-
-#         print(f"history: {list(history.conversation_history)}")
-
-
-#         # get answer from chat bot
-#         message = chat_completion(prompt=chat_data.prompt,
-#                                 conversation_history=history.conversation_history)
-#         print(f"message: {message}")
-#         history.conversation_history.append({"role":"user","content":chat_data.prompt})
-#         history.conversation_history.append({'role': 'assistant', 'content': message})
-        
-#         new_chat = UserChat(user_id=chat_data.user_id,
-#                             conversation_history=history.conversation_history,)
-#         db.add(new_chat)
-#         db.commit()
-#         db.refresh(new_chat)
-#         return HTTPException(status_code=status.HTTP_200_OK, detail={'message':'send successfully','data':new_chat})
-#     except Exception as e:
-#         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={'message':'something went wrong','error':e.args})
-
-
 @router.delete('/delete/{user_id}/{chat_id}')
 async def delete_chat_by_id(user_id: str, chat_id: str, db: Session = Depends(get_db)):
     """Delete conversation history from table Chat Compilation API"""
@@ -171,22 +82,23 @@ async def create_chat(websocket:WebSocket, db: Session = Depends(get_db)):
             conversation_history.append({'role': 'user', 'content': prompt})
             # print(f'')
             # get answer from chat bot
-            async for text in chat_completion_temp(conversation_history):
-                await websocket.send_json({
-                    'is_stream':True,
-                    'message':text,
-                    'chat_id':None,
-                })
-                bot_answer += text
-            
-            #developing mode 
-            # for letters in _data:
+            # async for text in chat_completion_temp(conversation_history):
             #     await websocket.send_json({
-            #             'is_stream':True,
-            #             'message':letters,
-            #             'chat_id':None,
-            #         })
+            #         'is_stream':True,
+            #         'message':text,
+            #         'chat_id':None,
+            #     })
+            #     bot_answer += text
+            
+            # developing mode 
+            for letters in _data:
+                await websocket.send_json({
+                        'is_stream':True,
+                        'message':letters,
+                        'chat_id':None,
+                    })
                 # await asyncio.sleep(0.01)
+                bot_answer += letters
                 
             conversation_history.append({'role': 'assistant', 'content': bot_answer})
             if chat_id is not None:
@@ -268,36 +180,7 @@ async def get_user_data_by_id(user_id:str,chat_id:str,db:Session=Depends(get_db)
     return chat_data
     
     
-    
-    
-    
-    
-#     @router.get('/{user_id}', summary='Get all previous chat data by user_id')
-# async def get_user_data(user_id:str,db:Session=Depends(get_db)):
-#     # db_user = db.query(UserChat).filter(UserChat.user_id == user_id).first()
-#     # print(f'db_user: {db_user} ')    
-#     db_user = db.query(User).filter(User.id == user_id).first()
-#     if len(list(db_user.userchats))==0:
-#         return []
-#     db_user = db.query(User).options(joinedload(User.userchats)).filter(User.id == user_id,).first()
-#     if db_user is None:
-#         raise HTTPException(status_code=404, detail="User not found")
-    
-        
-#     sorted_data :list[UserChat]= sortByDate(db_user.userchats)
-#     if len(sorted_data)>10:
-#         for data in sorted_data[10:]:
-#             db.query(UserChat).filter(UserChat.id == data.id).delete(synchronize_session=False) 
-#     db.commit()
-#     user = {
-#         'user_id':db_user.id,
-#         'username':db_user.username,
-#         'email':db_user.email,
-#         'user_chats':sorted_data[:10]
-#     }
-#     print(f'user: {user}')
-#     return user
-
+ 
 
 
 

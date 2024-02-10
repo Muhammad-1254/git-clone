@@ -1,7 +1,7 @@
 "use client";
 
 import { getChatByUserIdCharId } from "@/lib/RequestQueries";
-import { setAddingNewChatHistory, setRealTimeUserChat } from "@/lib/redux/slice/UserChatSlice";
+import { setAddingNewChatHistory, setEmptyRealTimeUserChat, setRealTimeUserChat } from "@/lib/redux/slice/UserChatSlice";
 import {
   setUserMessage
 } from "@/lib/redux/slice/WebSocketSlice";
@@ -57,7 +57,7 @@ const UserInput = () => {
                const data = await getChatByUserIdCharId(user_id, loadData.chat_id)
               console.log('new chat fetch :',data)
               dispatch(setAddingNewChatHistory({...data, user_id}))
-              // dispatch(setEmptyRealTimeUserChat(null))
+              dispatch(setEmptyRealTimeUserChat(null))
             }
           };
           ws.onclose = () => {
@@ -84,21 +84,20 @@ const UserInput = () => {
   }
 
   return (
-    <div className="flex flex-col items-start justify-normal gap-y-5">
-      <div className="">
-        <p>{modelResponse}</p>
-      </div>
-        <h1>User Input Field</h1>
-      <div  className="flex  items-center gap-x-2">
+     
+      <div  className="w-full flex justify-center items-center gap-x-2 " >
         
         <Input
+        
           value={userMessage}
           onChange={(e) => dispatch(setUserMessage(e.target.value))}
           placeholder="Enter your message"
+          className="w-[75%]"
         />
-        <Button onClick={sendMessageHandle}>Send message</Button>
+        <Button
+        className=""
+        onClick={sendMessageHandle}>Send Message</Button>
       </div>
-    </div>
   );
 };
 
