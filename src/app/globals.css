@@ -74,3 +74,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+
+.textarea::-webkit-scrollbar {
+  width: 8px;               /* width of the entire scrollbar */
+}
+.textarea::-webkit-scrollbar-track {
+  background: gray;        /* color of the tracking area */
+}
+.textarea::-webkit-scrollbar-thumb {
+  background-color: black;    /* color of the scroll thumb */
+  border-radius: 20px;       
+  
+}

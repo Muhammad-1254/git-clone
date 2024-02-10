@@ -6,13 +6,19 @@ import {
   setUserMessage
 } from "@/lib/redux/slice/WebSocketSlice";
 import { useAppSelector } from "@/lib/redux/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { IoSend } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import webSocketService from "./WebSocketService";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+
 
 const UserInput = () => {
+  // const [textAreaWidth, setTextAreaWidth] = useState(0)
+  const [textAreaHeight,setTextAreaHeight] = useState(55)
+  const [lineHeight, setLineHeight] = useState(55)
+  const [btnLoading, setBtnLoading] = useState(false)
   const user_id = useAppSelector((state)=>state.AuthReducer.value.user_id)
   const userMessage = useAppSelector(
     (state) => state.WebSocketReducer.value.userMessage
@@ -26,6 +32,9 @@ const UserInput = () => {
   const runUseEffect = useAppSelector((state)=>state.WebSocketReducer.value.runUseEffect)
 
   const dispatch = useDispatch();
+
+
+
   useEffect(() => {
     let tempChatId = chat_id;
     try {
@@ -74,30 +83,75 @@ const UserInput = () => {
   }, [runUseEffect ]);
 
   function sendMessageHandle() {
+    setBtnLoading(true)
     dispatch(setRealTimeUserChat({userMessage}))
     const ws = webSocketService.getSocket()
    if (ws !== null){
     ws.send(userMessage)
     dispatch(setUserMessage(""))
    }
+   setBtnLoading(false)
    
   }
 
+
+  async function inputText(text: string) {
+    console.log(text);
+  
+
+    dispatch(setUserMessage(text))
+    let tAreaHeightBe = 70
+    const  initialTextAreaHeight = 55
+  let textLength = text.length
+    if (textLength%tAreaHeightBe===0) {
+      
+      setTextAreaHeight((textAreaHeight/100)*initialTextAreaHeight*2.1);
+      setLineHeight(23)
+      console.log(text.length)
+      console.log(textAreaHeight);
+    } else if(textLength<tAreaHeightBe || textLength ===0) {
+      setTextAreaHeight(55); 
+      setLineHeight(55)
+    }
+  }
   return (
      
-      <div  className="w-full flex justify-center items-center gap-x-2 " >
-        
-        <Input
-        
-          value={userMessage}
-          onChange={(e) => dispatch(setUserMessage(e.target.value))}
-          placeholder="Enter your message"
-          className="w-[75%]"
-        />
-        <Button
-        className=""
-        onClick={sendMessageHandle}>Send Message</Button>
-      </div>
+    <div
+    style={{height:`${textAreaHeight}px`}}
+    className={` relative flex items-end   w-full bg-secondary
+ h-[55px]
+ ${textAreaHeight>56?"rounded-2xl":'rounded-3xl'}    
+    `}
+  >
+    <textarea
+      className={`textarea w-[75%] bg-secondary resize-none   px-3 ${textAreaHeight>56?"rounded-2xl":'rounded-3xl'}
+      ring-offset-0 outline-none
+`}
+      value={userMessage}
+      onChange={(event) => inputText(event.target.value)}
+      style={{ height: `${textAreaHeight}px`, lineHeight:`${lineHeight}px` }}
+    />
+
+    <Button
+      disabled={btnLoading}
+      onClick={sendMessageHandle}
+      type="button"
+      variant={'ghost'}
+      className="absolute  bottom-[9px] right-[5%]  "
+    >
+      {btnLoading ? (
+        <div
+          className="
+      text-2xl font-bold animate-spin
+      "
+        >
+          <AiOutlineLoading3Quarters />
+        </div>
+      ) : (
+        <IoSend />
+      )}
+    </Button>
+  </div>
   );
 };
 

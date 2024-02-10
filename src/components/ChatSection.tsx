@@ -16,7 +16,7 @@ const ChatSection = () => {
     const activeChatID = useAppSelector((state)=>state.UserChatReducer.value.chatPageActiveChat)
   const realTimeData = useAppSelector((state)=>state.UserChatReducer.value.realTimeUserChat)
     return (
-      <div className="w-[calc(100%/1.5)]  lg:mx-auto h-screen flex flex-col items-start justify-evenly lg:justify-between lg:pb-1.5  " >
+      <div className="relative w-[calc(100%/1.5)]  lg:mx-auto h-screen flex flex-col items-start justify-evenly lg:justify-between lg:pb-1.5  " >
     <div className=" w-full  flex flex-col items-start ">
 <ScrollArea className="flex flex-col  h-[90vh] ">
 
@@ -35,7 +35,10 @@ const ChatSection = () => {
 
 
     </div>
+    <div className="w-full absolute bottom-2.5">
+
     <UserInput/>
+    </div>
 </div>
 
   )
