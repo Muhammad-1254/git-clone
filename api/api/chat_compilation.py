@@ -1,14 +1,9 @@
-import asyncio
-from uuid import uuid4
 
 from db.database import get_db
-from db.models.User import User, UserChat
+from db.models.User import UserChat
 from fastapi import (APIRouter, Depends, HTTPException, WebSocket,
                      WebSocketException, status)
-from openai_chat.openai_connection import chat_completion, chat_completion_temp
-from schemas.chat import Chat, ChatCreate, ChatNewCreate, ChatPrevConversation
-from sqlalchemy import delete
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 

@@ -1,11 +1,6 @@
-import json
-from pathlib import Path
 
 from dotenv import find_dotenv, load_dotenv
 from openai import AsyncOpenAI, OpenAI
-from openai.types.beta.assistant import Assistant
-from openai.types.beta.thread import Thread
-from openai.types.beta.threads.run import Run
 from openai.types.chat.chat_completion import ChatCompletion
 
 _: bool = load_dotenv(find_dotenv())

@@ -96,7 +96,7 @@ const UserInput = () => {
 
 
   async function inputText(text: string) {
-    console.log(text);
+    // console.log(text);
   
 
     dispatch(setUserMessage(text))
@@ -107,8 +107,9 @@ const UserInput = () => {
       
       setTextAreaHeight((textAreaHeight/100)*initialTextAreaHeight*2.1);
       setLineHeight(23)
-      console.log(text.length)
-      console.log(textAreaHeight);
+      // console.log(text.length)
+      
+      // console.log(textAreaHeight);
     } else if(textLength<tAreaHeightBe || textLength ===0) {
       setTextAreaHeight(55); 
       setLineHeight(55)

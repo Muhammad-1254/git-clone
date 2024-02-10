@@ -4,7 +4,7 @@ from db.database import engine
 from db.models.User import Base
 from fastapi import FastAPI
 
-from api import chat_compilation, login, signup, whisper
+from api import chat_compilation
 
 Base.metadata.create_all(bind=engine)
 
@@ -85,15 +85,18 @@ app = FastAPI()
 # @app.
 
 
-app.include_router(login.router,)
-app.include_router(signup.router)
+# app.include_router(login.router,)
+# app.include_router(signup.router)
 app.include_router(chat_compilation.router, prefix='/api/v1/users/chat')
-app.include_router(whisper.router, prefix='/api/v1/users/chat/voice')
+# app.include_router(whisper.router, prefix='/api/v1/users/chat/voice')
 
 
 
 
 
+if __name__ == 'main':
+    import uvicorn
+    uvicorn.run(app='main:app', host='0.0.0.0',port=8000, reload=True, workers=1)
 
 
 
